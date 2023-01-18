@@ -1,0 +1,63 @@
+passo a passo BACKEND
+
+CRIAR package.json:
+npm init -y
+
+PRA USAR NO LUGAR DO EXPRESS:
+npm install fastify
+
+PRA PODER USAR TYPESCRIPT:
+npm install typescript -D
+npx tsc --init
+
+no tsconfig.json, editar: 
+"target" para "es2020"
+
+npm i tsx -D = PRA RODAR O TYPESCRIPT COM NODE
+PRA RODAR: npx tsx src/server.ts
+
+PRA SIMPLIFICAR:
+no package.json criar o script:
+    "dev": "tsx src/server.ts",
+e rodar com "npm run dev"
+
+PRA N PRECISAR FICAR RODANDO DE NOVO:
+em:
+    "dev": "tsx src/server.ts",
+colocar:
+    "dev": "tsx watch src/server.ts",
+
+instalar prisma com dev:
+npm i -D prisma
+npm i @prisma/client
+
+PRA USAR SQLITE:
+npx prisma init --datasource-provider SQLite
+
+INSTALAR EXTENSAO DO PRISMA NO VS CODE!!!
+
+CRIAR TABELAS:
+npx prisma migrate dev
+dar o nome pra migration tipo:
+"create table habits"
+
+EXEMPLO DE USO DO PRISMA:
+app.get('/hello', async () => {
+    const habits = await prisma.habit.findMany({
+      where: {
+        title: {
+            startsWith: "jump"
+        }
+      }  
+    })
+
+    return habits
+})
+
+pro front end conseguir usar:
+npm i @fastify/cors
+
+pra especificar o front end q pode usar:
+app.register(cors, {
+    origin: ['http://localhost:3000']
+})
