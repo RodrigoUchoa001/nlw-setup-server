@@ -61,3 +61,12 @@ pra especificar o front end q pode usar:
 app.register(cors, {
     origin: ['http://localhost:3000']
 })
+
+
+AULA 2
+
+biblioteca de validação
+npm i zod
+
+biblioteca para trabalhar com datas
+npm i dayjs
