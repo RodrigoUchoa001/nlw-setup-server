@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { prisma } from "./lib/prisma"
 
 export async function appRoutes(app: FastifyInstance) {
+    // salvar nova hábito
     app.post('/habits', async (req) => {
         const createHabitBody = z.object({
             title: z.string(),
@@ -32,6 +33,7 @@ export async function appRoutes(app: FastifyInstance) {
         })
     })
 
+    // obter hábitos completos e possíveis de um dia.
     app.get('/day', async (req) => {
         const getDayParams = z.object({
             date: z.coerce.date() //corce pq oq vem do front end é uma String, coerce converte para date.
@@ -73,6 +75,58 @@ export async function appRoutes(app: FastifyInstance) {
             completedHabits
         }
     })
-    // parou em 45:46
+
+    // completar / descompletar um hábito
+    app.patch('/habits/:id/toggle', async (req) => {
+        const toggleHabitParams = z.object({
+            id: z.string().uuid(),
+        })
+
+        const { id } = toggleHabitParams.parse(req.params)
+
+        const today = dayjs().startOf('day').toDate()
+
+        let day = await prisma.day.findUnique({
+            where: {
+                date: today
+            }
+        })
+
+        if (!day) {
+            day = await prisma.day.create({
+                data: {
+                    date: today
+                }
+            })
+        }
+
+        const dayHabit = await prisma.dayHabit.findUnique({
+            where: {
+                day_id_habit_id: {
+                    day_id: day.id,
+                    habit_id: id,
+                }
+            }
+        })
+
+        if(dayHabit) {
+            // remover marcação de completo
+            await prisma.dayHabit.delete({
+                where: {
+                    id: dayHabit.id
+                }
+            })
+        } else {
+            // completando o hábito
+            await prisma.dayHabit.create({
+                data: {
+                    day_id: day.id,
+                    habit_id: id               
+                }
+            })
+        }        
+    })
+
+    // continua em 14:28
 }
 
